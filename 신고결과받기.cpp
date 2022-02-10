@@ -9,7 +9,7 @@ using namespace std;
 
 vector<int> solution(vector<string> id_list, vector<string> report, int k) {
 
-    // 내가 정지당한 경우 + 내가 신고한 유저가 정지당한 경우
+    // 내가 신고한 유저가 정지당한 경우를 세기 (정지당한 사람은 메일 X)
     // 중복신고 확인해야함
 
     int id_len = id_list.size();
@@ -21,9 +21,10 @@ vector<int> solution(vector<string> id_list, vector<string> report, int k) {
     // 중복신고 및 신고자 리스트를 확인하기 위한 2차원 배열
     int** reportCheck = new int* [id_len];
 
-    // 유저 ID와 유저 ID 배열의 인덱스를 Map에 저장
+    // 유저 ID와 유저 ID 배열의 인덱스를 Map에 저장, ID로 인덱스에 접근하기 위함
     map<string, int> userIndex;
     for (int i = 0; i < id_len; i++) {
+        
         userIndex.insert({ id_list[i],i });
 
         reportCheck[i] = new int [id_len];
@@ -47,7 +48,7 @@ vector<int> solution(vector<string> id_list, vector<string> report, int k) {
         if (!reportCheck[idx1][idx2]) // 중복신고가 아니라면
         {
             reported[idx2] += 1; // 신고횟수 증가
-            reportCheck[idx1][idx2] = 1; // 신고 표시 - 1이 2를 신고
+            reportCheck[idx1][idx2] = 1; // 신고 표시 : 1이 2를 신고
         }
     }
 
@@ -57,7 +58,7 @@ vector<int> solution(vector<string> id_list, vector<string> report, int k) {
     {
         if (reported[i] >= k)
         {
-            answer[i] += 1; // 정지당한 사람 +1
+            // answer[i] += 1; // 정지당한 사람도 정지메일 받는 줄 ;;
             for (int j=0; j<id_len; j++)
                 if (reportCheck[j][i]) answer[j] += 1; // 신고한 사람 +1
         }
