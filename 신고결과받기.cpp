@@ -9,9 +9,6 @@ using namespace std;
 
 vector<int> solution(vector<string> id_list, vector<string> report, int k) {
 
-    // 내가 신고한 유저가 정지당한 경우를 세기 (정지당한 사람은 메일 X)
-    // 중복신고 확인해야함
-
     int id_len = id_list.size();
 
     // 신고받은 횟수 배열
@@ -31,10 +28,8 @@ vector<int> solution(vector<string> id_list, vector<string> report, int k) {
         memset(reportCheck[i], 0, sizeof(int) * id_len); // 중복신고 체크 배열 초기화
     }
 
-    string bf1;
-    string bf2;
-    int idx1;
-    int idx2;
+    string bf1, bf2;
+    int idx1, idx2;
    
     for (int i = 0; i < report.size(); i++) {
         
@@ -48,7 +43,7 @@ vector<int> solution(vector<string> id_list, vector<string> report, int k) {
         if (!reportCheck[idx1][idx2]) // 중복신고가 아니라면
         {
             reported[idx2] += 1; // 신고횟수 증가
-            reportCheck[idx1][idx2] = 1; // 신고 표시 : 1이 2를 신고
+            reportCheck[idx1][idx2] = 1; // 신고 표시 - 1이 2를 신고
         }
     }
 
@@ -58,7 +53,6 @@ vector<int> solution(vector<string> id_list, vector<string> report, int k) {
     {
         if (reported[i] >= k)
         {
-            // answer[i] += 1; // 정지당한 사람도 정지메일 받는 줄 ;;
             for (int j=0; j<id_len; j++)
                 if (reportCheck[j][i]) answer[j] += 1; // 신고한 사람 +1
         }
