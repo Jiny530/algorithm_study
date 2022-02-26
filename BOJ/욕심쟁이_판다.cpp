@@ -1,48 +1,26 @@
 #include <iostream>
 #include <algorithm>
-#include <vector>
-#include <map>
 using namespace std;
 
-struct index
-{
-	int tree;
-	int row;
-	int col;
-};
-// 정렬된 값과, 정렬되지 않은 원래의 값과, 정렬되지 않은 원래의 값이 가지고 있는 정렬된 값이 필요.
-bool cmp(const index& a, const index& b)
-{
-	return a.tree < b.tree;
-}
 int f_size;
-int panda_road(int** forest, vector<index> sorted, vector<int> &maxVal, int curr) 
+int dx[] = { 0,0,1,-1 };
+int dy[] = { 1,-1,0,0 };
+
+int panda_road(int** forest, int** dp, int x, int y)
 {
-	int r = sorted[curr].row;
-	int c = sorted[curr].col;
-	int i = r * f_size + c;
-	int max_road = 0;
+	// 이미 dp가 정해진 곳은 더 계산 안해도 됨
+	if (dp[x][y] != 1) return dp[x][y];
 
-	// 상하좌우에 더 작은 숲이 있으면 그 숲의 최대 길찾기 값 +1
-	if (r > 0 && forest[r - 1][c] < sorted[curr].tree) {
-		max_road = max(max_road, maxVal[i-f_size] + 1); // 상
+	int px, py;
+	for (int i = 0; i < 4; i++) {
+		px = x + dx[i];
+		py = y + dy[i];
+		if (px >= 0 && px < f_size && py >= 0 && py < f_size && forest[x][y] > forest[px][py]) {
+			// 현재 숲 주위에 더 작은 숲이 있으면, 그 숲들의 dp값 중 최대인 것을 찾아 +1 
+			dp[x][y] = max(dp[x][y], panda_road(forest, dp, px, py) + 1);
+		}
 	}
-	if (r < f_size - 1 && forest[r + 1][c] < sorted[curr].tree) {
-		max_road = max(max_road, maxVal[i + f_size] + 1); // 하
-	}
-	if (c > 0 && forest[r][c - 1] < sorted[curr].tree) {
-		max_road = max(max_road, maxVal[i - 1] + 1); // 좌
-	}
-	if (c < f_size - 1 && forest[r][c + 1] < sorted[curr].tree) {
-		max_road = max(max_road, maxVal[i + 1] + 1); // 우
-	}
-
-	// 주변에 더 작은 숲이 없으면 1 반환
-	if (max_road == 0) maxVal[i] = 1;
-	else maxVal[i] = max_road;
-	
-	return maxVal[i];
-	
+	return dp[x][y];	
 }
 int main() {
 
@@ -50,27 +28,24 @@ int main() {
 	int panda_max = 0;
 
 	int ** forest = new int*[f_size]; // 대나무숲
-	vector<index> sortedForest(f_size*f_size);
-	vector<int> maxValue(f_size * f_size,0);
+	int ** dp = new int* [f_size]; // 최대로 살 수 있는 값
 
 	for (int i = 0; i < f_size; i++)
 	{
 		forest[i] = new int[f_size];
+		dp[i] = new int[f_size];
 		for (int j = 0; j < f_size; j++)
 		{
 			cin >> forest[i][j];
-			// 2차원 배열의 정보를 1차원 배열에 저장
-			int k = i * f_size + j;
-			sortedForest[k].tree = forest[i][j];
-			sortedForest[k].row = i;
-			sortedForest[k].col = j;
+			dp[i][j] = 1;
 		}
 	}
 
-	sort(sortedForest.begin(), sortedForest.end(), cmp);
-
-	for (int i = 0; i < f_size * f_size; i++) {
-		panda_max = max(panda_max, panda_road(forest, sortedForest, maxValue, i));
-	}
+	for (int i = 0; i < f_size; i++) {
+		for (int j = 0; j < f_size; j++) {
+			cout << i << j << endl;
+			panda_max = max(panda_max, panda_road(forest, dp, i, j));
+		}
+	}	
 	cout << panda_max;
 }
