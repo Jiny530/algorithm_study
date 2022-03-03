@@ -3,7 +3,10 @@
 #include <map>
 
 using namespace std;
-
+struct node {
+    char opponent;
+    int *intervals;
+};
 vector<int> intervals(char sign, int range, int n) {
     
     vector<int> interval;
@@ -58,14 +61,40 @@ int solution(int n, vector<string> data) {
 
     // 자리 배치
     map<string, vector<int>>::iterator it = conditions.begin();
-    map<string, int> order;
+    bool temp[9] = { 0,0,0,0,0,0,0,0,0 };
     while (it != conditions.end()) {
+        map<char, int> order;
         for (int i = 0; i < it->second.size(); i++) {
+            for (int t = 1; t < 9; t++) { // 앞문자
+                if (temp[t] == 0) {
+                    order[it->first[0]] = t;
+                    break;
+                }
+            }
 
+            
         }
         ++it;
     }
 
 
     return answer;
+}
+
+int ordering(char one, char another, int interval, map<char, int>* order, bool** temp) {
+    
+    int count = 0;
+    map<char, int>::iterator it1, it2;
+    it1 = order->find(one);
+    it2 = order->find(another);
+
+    if (it1!=order->end()) { // 가 이미 자리를 배정받았고 
+        if (it2->second - interval > 0);
+        if (it2->second + interval < 9); //dfs?
+        return count;
+    }
+    else {
+        for (int k = 1; k < 9; k++); //dfs
+        return count;
+    }
 }
