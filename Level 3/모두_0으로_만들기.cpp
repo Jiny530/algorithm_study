@@ -1,70 +1,66 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <queue>
 #include <algorithm>
 using namespace std;
 
 vector<int> wei;
+vector<int> visit;
+queue<pair<int,int>> connect;
+ // 시간초과
+
 bool compare(int a, int b)
 {
     return wei[a] <= wei[b];
 }
-
-bool compare2(pair<int,int> a, pair<int, int> b)
+// num이 0이 될때까지 호출
+int bfs(vector<vector<int>> tree, int weight)
 {
-    return a.second >= b.second;
-}
+    pair<int, int> pair = connect.front(); // 큐의 앞 원소 빼기
+    int node = pair.first;
+    int depth = pair.second;
+    int count = 0;
+    visit[node] = 1;
 
-// num이 0이 될때까지 반복 호출하는 재귀함수
-int dfs(vector<vector<int>> tree, vector<int> a, vector<int>visit, int node, int weight, int depth)
-{
-    int min_count = 100000;
-    // i는 node와 연결된 노드의 인덱스
-    for (int i = 0; i < tree[node].size(); i++)
+    if (tree[node].size() == 1) goto next;
+
+    if (wei[node] < 0) // 가중치가 음수인 노드이면 원래노드와 연산
     {
-        int count = 0;
-        vector<int> temp = a;
-        if (visit[i] == 1) continue;
-        visit[i] = 1;
-        int w = tree[node][i];
-        if (a[w] < 0 && weight + a[w] >= 0)
+        if (weight + wei[node] > 0)
         {
-            count -= a[w] * depth;
-            weight += a[w];
-            temp[w] = 0;
+            count -= wei[node] * depth;
+            weight += wei[node];
+            wei[node] = 0;
         }
-        else if (a[w] < 0 && weight + a[w] < 0)
+        else 
         {
             count -= weight * depth;
+            wei[node] += weight;
             weight = 0;
+            return count;
         }
-
-        // 무조건 dfs가 아니라 같은 depth의 노드도 봐야하는 bfs를 해야하는듯
-        if (weight == 0) min_count = min(min_count, count);
-        else {
-            count += dfs(tree, temp, visit, w, temp[i]);
-        }
-        
-        visit[i] = 0;
-
-
     }
+
+    // 0으로 만드려는 노드이거나 노드연산 후에도 weight가 0 이 아니면 연결된 노드를 큐에 넣고 계속해서 연산함
+    for (int i = 0; i < tree[node].size(); i++)
+    {
+        if (visit[tree[node][i]] == 0) connect.push({ tree[node][i], depth + 1 });
+    }
+    
+    next:
+    count += bfs(tree, weight);
     return count;
 }
+
 long long solution(vector<int> a, vector<vector<int>> edges) {
     long long answer = 0;
     wei = a;
     vector<vector<int>> tree(wei.size(), vector<int>()); // 노드의 가중치와 연결된 에지들을 나타낼 트리
     int sum = 0;
-    bool is_zero = true;
 
-    for (int i = 0; i < wei.size(); i++)
-    {
-        sum += wei[i];
-        if (wei[i] != 0) is_zero = false;
-    }
+    for (int i = 0; i < wei.size(); i++) sum += wei[i];
     if (sum != 0) return -1;
-    else if (is_zero) return 0;
 
     // 각노드에 연결된 노드를 저장
     for (int i = 0; i < edges.size(); i++)
@@ -105,19 +101,18 @@ long long solution(vector<int> a, vector<vector<int>> edges) {
         }
     }
 
-    vector<pair<int, int>> weight(wei.size(), { 0,0 }); // 양수 노드의 인덱스와 가중치를 저장하여 가중치 순으로 정렬
     for (int i = 0; i < wei.size(); i++)
     {
         if (wei[i] <= 0) continue;
-        weight.push_back({ i,wei[i] });
-    }
-    sort(weight.begin(), weight.end(), compare2);
+        vector<int> visited(a.size(), 0);
+        visit = visited;
 
-    for (int i = 0; i < weight.size(); i++)
-    {
-        vector<int> visit(a.size(), 0);
-        visit[weight[i].first] = 1;
-        answer += dfs(tree, wei, visit, weight[i].first, weight[i].second, 1);
+        queue<pair<int,int>> connected;
+        connect = connected;
+
+        connect.push({ i, 0});
+        answer += bfs(tree, wei[i]);
+
     }
     
 
