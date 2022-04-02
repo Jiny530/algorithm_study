@@ -1,20 +1,34 @@
 #include <string>
 #include <vector>
+#include <iostream>
 using namespace std;
-
-int solution(vector<int> stones, int k) {
-    int answer =2000000001;
-    
-    for(int i=0; i<stones.size()-k+1; i++)
+bool can_cross(vector<int>stones, int num, int k)
+{
+    int stone_num = 0;
+    for (int i = 0; i < stones.size(); i++)
     {
-        if (stones[i+k-1]>=answer) continue;
-        int max=0;
-        for(int j=i; j<i+k; j++) 
-        {
-            if (max<stones[j]) max= stones[j];
+        if (stones[i] < num) {
+            stone_num++;
+            if (stone_num == k) return false;
         }
-        if (answer>max) answer = max;
+        else stone_num = 0;
     }
-    
+    return true;
+}
+int solution(vector<int> stones, int k) {
+    int answer = 0;
+    int left = 1;
+    int right = 2000000000;
+    while (left <= right)
+    {
+        int mid = (left + right) / 2;
+        if (can_cross(stones, mid, k)) // mid 명이 징검다리를 건너갈 수 있음
+        {
+            answer = mid;
+            left = mid + 1;
+        }
+        else right = mid - 1;
+    }
+
     return answer;
 }
