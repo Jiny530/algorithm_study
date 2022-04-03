@@ -28,14 +28,7 @@ int solution(int n, vector<vector<int>> costs) {
     }
 
     int min = 0;
-    for (int i = 1; i < n; i++) // 맨 처음 노드부터 시작
-    {
-        cost[i] = nodes[0][i];
-        if (cost[i] < cost[min]) min = i;
-    }
-    answer += cost[min];
-
-    for (int i = 0; i < n - 2; i++)
+    for (int i = 0; i < n-1; i++) // 섬 n개를 딱 한번씩만 연결 => n-1번
     {
         visit[min] = 1;
         min = greedy(min, &cost, nodes, visit);
