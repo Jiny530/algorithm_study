@@ -2,6 +2,7 @@
 #include<vector>
 using namespace std;
 int wid, hei;
+// 효율성 탈락
 int find_square(int x, int y, int len, vector<vector<int>> board)
 {
     int answer = 1;

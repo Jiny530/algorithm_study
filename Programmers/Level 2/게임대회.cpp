@@ -2,6 +2,7 @@
 #include <cstdlib>
 using namespace std;
 
+// 테스트케이스 미완
 int solution(int n, int a, int b)
 {
     int answer = 1;

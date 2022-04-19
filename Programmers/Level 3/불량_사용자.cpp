@@ -2,6 +2,8 @@
 #include <vector>
 #include <algorithm>
 
+// 테스트케이스 미완
+
 using namespace std;
 bool compare(vector<int> a, vector<int> b)
 {
